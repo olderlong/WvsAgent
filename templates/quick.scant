@@ -1,7 +1,7 @@
 <ScanConfiguration Version="9.3">
   <Application>
     <StartingUrls>
-      <StartingUrl>http://127.0.0.1</StartingUrl>
+      <StartingUrl>http://192.168.3.10</StartingUrl>
     </StartingUrls>
     <DefaultEncoding>AutoDetect</DefaultEncoding>
     <AdditionalServers />
@@ -85,7 +85,7 @@
     <AutomaticCrawlerLogoutLinks>False</AutomaticCrawlerLogoutLinks>
     <AutomaticCrawlerExtractLinks>True</AutomaticCrawlerExtractLinks>
     <AutomaticCrawlerDomManipulation>OnlyAjax</AutomaticCrawlerDomManipulation>
-    <AutomaticCrawlerEnableClickFiltering>False</AutomaticCrawlerEnableClickFiltering>
+    <AutomaticCrawlerEnableClickFiltering>True</AutomaticCrawlerEnableClickFiltering>
     <AutomaticCrawlerClickFilteringThreshold>8</AutomaticCrawlerClickFilteringThreshold>
     <AutomaticCrawlerExcludeActions>Clear|Cancel|Sort|Filter</AutomaticCrawlerExcludeActions>
   </AutomaticCrawlerConfiguration>
@@ -117,7 +117,7 @@
         <Description />
         <PathPattern>
           <ConfigPattern IsRegularExpression="True">
-            <Pattern>^https?://127\.0\.0\.1(:80|:443)?(/|$|\?)</Pattern>
+            <Pattern>^https?://192\.168\.3\.10(:80|:443)?(/|$|\?)</Pattern>
           </ConfigPattern>
         </PathPattern>
         <ParametersPatterns />
@@ -1777,7 +1777,7 @@
     <PERoles />
   </TestPolicy>
   <SessionManagement Version="1.2">
-    <SessionManagementMode>Manual</SessionManagementMode>
+    <SessionManagementMode>None</SessionManagementMode>
     <AllowConcurrentLogins>True</AllowConcurrentLogins>
     <EnableJSXInLoginReplay>False</EnableJSXInLoginReplay>
     <UseAutomaticABL>False</UseAutomaticABL>
@@ -2836,25 +2836,6 @@
     <Question LogicalName="integrityRequirement" DefaultAnswer="NotDefined" CurrentAnswer="NotDefined" />
     <Question LogicalName="availabilityRequirement" DefaultAnswer="NotDefined" CurrentAnswer="NotDefined" />
   </GlobalQuestions>
-  <ExtendedConfigurations>
-    <ExtendedConfiguration ID="ScanOptimizer">
-      <ScanOptimizer>
-        <UrlLimit>1000</UrlLimit>
-        <SwitchComplexityLimit>20</SwitchComplexityLimit>
-        <MaxExecutionTime>15</MaxExecutionTime>
-        <MaxDepthforStartofLinePairs>5</MaxDepthforStartofLinePairs>
-        <AdditionalDelimiters>: * " &lt; &gt; | . ; , ! = &amp; _</AdditionalDelimiters>
-        <NameValuePairDelimiters>: = &gt;</NameValuePairDelimiters>
-        <ConfidenceMarginPercentage>10</ConfidenceMarginPercentage>
-        <AnchorRight>False</AnchorRight>
-        <MergeLeft>True</MergeLeft>
-        <RemoveUnusedDelimiters>True</RemoveUnusedDelimiters>
-        <NavigationalParameterNames>nav url page step redirect request location target argument goto node action ctrl control source menu frame module path command item article</NavigationalParameterNames>
-        <NavigationalParametersValues>https?:// https?%3a \.(htm|jsp|jsf|ws|dll|asp|php|do)</NavigationalParametersValues>
-        <NavigationalParametersEnabled>False</NavigationalParametersEnabled>
-      </ScanOptimizer>
-    </ExtendedConfiguration>
-  </ExtendedConfigurations>
   <CrossScanDataAutoImport>True</CrossScanDataAutoImport>
   <AdvancedScanOptions Version="2.5">
     <Group Name="Communication">
