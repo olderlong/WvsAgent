@@ -39,7 +39,6 @@ class MessageBus(object):
                 # 获取事件的阻塞时间设为1秒
                 msg = self.__msg_queue.get(block=True, timeout=0.1)
                 # self.__queue_lock.release()
-
                 self.___msg_process(msg)
             except Empty:
                 pass
@@ -48,7 +47,6 @@ class MessageBus(object):
         """处理事件"""
         # 检查是否存在对该事件进行监听的处理函数
         if msg.subject in self.__handlers:
-
             # 若存在，则按顺序将事件传递给处理函数执行
             for handler in self.__handlers[msg.subject]:
                 handler(msg)
