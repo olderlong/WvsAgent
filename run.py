@@ -14,7 +14,6 @@ appscan = AppScanControl()
 def agent_run():
     logger.info("Agent running...")
     agent.start()
-    agent.join()
 
 
 def agent_stop():
@@ -28,3 +27,4 @@ msg_bus.add_msg_listener(common_msg.MSG_AGENT_EXIT, agent_stop)
 
 if __name__ == '__main__':
     agent_run()
+    agent.join()
