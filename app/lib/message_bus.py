@@ -46,10 +46,13 @@ class MessageBus(object):
     def ___msg_process(self, msg):
         """处理事件"""
         # 检查是否存在对该事件进行监听的处理函数
+
         if msg.subject in self.__handlers:
             # 若存在，则按顺序将事件传递给处理函数执行
             for handler in self.__handlers[msg.subject]:
-                handler(msg)
+                t = Thread(target=handler, args=(msg, ))
+                t.start()
+                # handler(msg)
 
     def start(self):
         """启动"""
