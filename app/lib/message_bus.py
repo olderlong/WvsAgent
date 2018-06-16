@@ -50,9 +50,7 @@ class MessageBus(object):
         if msg.subject in self.__handlers:
             # 若存在，则按顺序将事件传递给处理函数执行
             for handler in self.__handlers[msg.subject]:
-                t = Thread(target=handler, args=(msg, ))
-                t.start()
-                # handler(msg)
+                Thread(target=handler, args=(msg, )).start()
 
     def start(self):
         """启动"""
