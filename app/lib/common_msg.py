@@ -22,6 +22,7 @@ class CommonMsg(object):
 
         self.MSG_WVS_STATE = "WVSState"
         self.msg_wvs_state = Message(subject=self.MSG_WVS_STATE)
+
         self.MSG_WVS_RESULT_RECEIVE = "ScanResultReceive"
         self.msg_scan_result_receive = Message(subject=self.MSG_WVS_RESULT_RECEIVE)
 
@@ -36,3 +37,4 @@ class CommonMsg(object):
 
         self.MSG_SCAN_RESULT_SEND = "ScanResultSend"
         self.msg_scan_result_send = Message(subject=self.MSG_SCAN_RESULT_SEND)
+
