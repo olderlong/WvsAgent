@@ -5,12 +5,14 @@ import shutil
 import logging
 import subprocess
 import time
+import threading
 try:
     import xml.etree.cElementTree as ET
 except ImportError:
     import xml.etree.ElementTree as ET
 from app.lib import msg_bus, common_msg
 from app import WVSControlBase
+from .wvs_state import WvsState
 
 logger = logging.getLogger("Agent")
 
@@ -18,10 +20,13 @@ logger = logging.getLogger("Agent")
 APPSCAN_RETCODE=["成功完成", "启动失败", "命令行错误", "许可证无效",
                  "装入失败", "扫描失败", "报告失败", "保存失败", "常见错误"]
 
+wvsstate = WvsState(wvs_name="Appscan", address=("192.168.3.10", 5555))
+
 
 class AppScanControl(WVSControlBase):
     def __init__(self):
-        self.appscan_path = "appscancmd.exe"
+        self.appscan_path = "appscancmd"
+
         super(AppScanControl, self).__init__()
 
     def start_new_scan(self, config):
@@ -39,49 +44,54 @@ class AppScanControl(WVSControlBase):
 
         self.__init_scan_config()
 
-        self.appscan_shell_cmd = "{} /e /st {} /d {} /rt xml /rf {}".format(
+        self.appscan_shell_cmd = "{} /e /st {} /d {} /rt xml /rf {} /v".format(
             self.appscan_path,
             self.scan_template_file,
             self.scan_result_file,
             self.scan_result_xml_file
         )
 
-        # self.appscan_shell_cmd = "{} /e /st {} /su {} /d {} /rt xml /rf {}".format(
-        #     self.appscan_path,
-        #     self.scan_template_file,
-        #     self.start_urls,
-        #     self.scan_result_file,
-        #     self.scan_result_xml_file
-        # )
         logger.info("Appscan shell command is: {}".format(self.appscan_shell_cmd))
         # for debug
-        self.appscan_shell_cmd = "ping -n 15 www.baidu.com"
+        # self.appscan_shell_cmd = "ping www.baidu.com"
         # for debug
         self.__start_appscan(self.appscan_shell_cmd)
 
-
     def stop_scan(self):
-        print("stop")
+        if self.appscan_process:
+            logger.info("Appscan is terminated.")
+            self.appscan_process.terminate()
 
     def __start_appscan(self, cmd):
-        self.appscan_process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        wvsstate.update_state(u"开始扫描")
+        # self.appscan_process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        self.appscan_process = subprocess.Popen(cmd, shell=True)
+
         while self.appscan_process.poll() is None:
-            line = self.appscan_process.stdout.readline()
-            line_str = str(line, 'gbk')
-            line_str = line_str.strip()
-            if line_str:
-                print("Appscan扫描进程输出：{}".format(line_str))
-            # time.sleep(0.1)
+            wvsstate.update_state(u"正在扫描")
+            time.sleep(5)
+        # self.appscan_process.wait()
+
+        # while self.appscan_process.poll() is None:
+        #     line = self.appscan_process.stdout.readline()
+        #     line_str = str(line, 'gbk')
+        #     line_str = line_str.strip()
+        #     if line_str:
+        #         print("Appscan扫描进程输出：{}".format(line_str))
+        #     # time.sleep(0.1)
 
         if self.appscan_process.returncode == 0:
             logger.info("Appscan扫描进程成功结束")
+            wvsstate.update_state(u"扫描结束")
             self.__process_scan_result()
         else:
             logger.error("Appscan {}".format(APPSCAN_RETCODE[self.appscan_process.returncode]))
+            wvsstate.update_state(u"{}".format(APPSCAN_RETCODE[self.appscan_process.returncode]))
 
     def __process_scan_result(self):
         res_list = self.__gen_scan_result()
         if res_list:
+            wvsstate.update_state(u"结果上报")
             for res in res_list:
                 result = {
                     "Type": "ScanResult",
@@ -89,8 +99,8 @@ class AppScanControl(WVSControlBase):
                 }
                 common_msg.msg_scan_result_send.data = result
                 msg_bus.send_msg(common_msg.msg_scan_result_send)
-
-                time.sleep(0.1)
+                self.__print_scan_result(res)
+                time.sleep(1)
 
     def __print_scan_result(self, vul_result):
         result_str = "漏洞类型:\t{}\n漏洞URL:\t{}\n漏洞等级:\t{}\n漏洞信息:\t".format(
@@ -110,6 +120,7 @@ class AppScanControl(WVSControlBase):
         print("\r\n")
 
     def __gen_scan_result(self):
+        wvsstate.update_state(u"处理结果")
         try:
             vul_result_list = []
             tree = ET.ElementTree(file=self.scan_result_xml_file)
@@ -142,7 +153,6 @@ class AppScanControl(WVSControlBase):
                     "VulSeverity": vul_severity,
                     "VulDetails": vul_details
                 }
-
                 vul_result_list.append(vul_result)
             return vul_result_list
         except Exception as e:
@@ -210,6 +220,7 @@ class AppScanControl(WVSControlBase):
 
         if self.scan_policy == "Normal":
             scan_template_file = "default.scant"
+            # scan_template_file = "quick.scant"
         elif self.scan_policy == "Quick":
             scan_template_file = "quick.scant"
         elif self.scan_policy == "Full":
@@ -218,6 +229,7 @@ class AppScanControl(WVSControlBase):
             scan_template_file = "default.scant"
 
         source_file = os.path.join(os.getcwd(), "templates", scan_template_file)
+        logger.info("template file is {}".format(source_file))
 
         if os.path.exists(source_file):
             if not os.path.exists(self.scan_template_file):
