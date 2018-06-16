@@ -12,7 +12,6 @@ class WVSControlBase(object):
         self.wvs_action = "StartNewScan"
         self.scan_config = {}
 
-
     def wvs_command_handler(self, msg):
         """
         wvs 控制命令处理
@@ -25,7 +24,6 @@ class WVSControlBase(object):
         :return:
         """
         command_data = msg.data
-        logger.info(command_data)
         try:
             self.wvs_action = command_data["Action"]
             if self.wvs_action == "StartNewScan":
