@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 # _*_ coding:utf-8 _*_
-import time, threading, logging
+import time, threading, logging, socket, psutil
 from app.lib import msg_bus, common_msg
 
 logger = logging.getLogger("Agent")
@@ -20,7 +20,11 @@ def singleton(cls):
 class WvsState(object):
     def __init__(self, wvs_name=None, address=None):
         self.wvs_name = wvs_name
-        self.address = address
+        if address:
+            self.address = address
+        else:
+            self.address = (self.get_host_ip(), 5555)
+
         self.state = {
             "Type": "WVSState",
             "Data": {
@@ -32,8 +36,8 @@ class WvsState(object):
         }
 
     def update_state(self, state_str=u"初始化"):
-        self.state["Data"]["Name"] = self.address
-        self.state["Data"]["Address"] = self.wvs_name
+        self.state["Data"]["Name"] = self.wvs_name
+        self.state["Data"]["Address"] = self.address
         self.state["Data"]["State"] = state_str
         self.state["Data"]["Timestamp"] = time.time()
         common_msg.msg_wvs_state.data = self.state
@@ -41,6 +45,19 @@ class WvsState(object):
 
         # threading.Thread(target=msg_bus.send_msg, args=(common_msg.msg_wvs_state,)).start()
 
+    def get_host_ip(self):
+        """
+        获取以太网eth的ip地址
+        :return: ip地址
+        """
+        info = psutil.net_if_addrs()
+        for k, v in info.items():
+            if str(k).startswith("以太网") or str(k).startswith("eth") or str(k).startswith("本地连接"):
+                for item in v:
+                    if item[0] == 2 and not item[1] == '127.0.0.1':
+                        return item[1]
+            else:
+                return socket.gethostname()
 
 def print_msg(msg):
     print(msg.data)
