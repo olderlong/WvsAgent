@@ -23,7 +23,7 @@ def __init_logger(name):
     file_handler = logging.FileHandler(
         os.path.join(
             app_path,
-            "readme.md/{}.readme.md".format(
+            "log/{}.log".format(
                 time.strftime("%Y_%m_%d_%H_%M_%S", time.gmtime(time.time())))))
     file_handler.setFormatter(formatter)  # 可以通过setFormatter指定输出格式
 
