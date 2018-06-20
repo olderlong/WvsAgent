@@ -20,7 +20,7 @@ logger = logging.getLogger("Agent")
 APPSCAN_RETCODE=["成功完成", "启动失败", "命令行错误", "许可证无效",
                  "装入失败", "扫描失败", "报告失败", "保存失败", "常见错误"]
 
-wvsstate = WvsState(wvs_name="Appscan", address=("192.168.3.10", 5555))
+wvsstate = WvsState(wvs_name="Appscan")
 
 
 class AppScanControl(WVSControlBase):
@@ -191,7 +191,7 @@ class AppScanControl(WVSControlBase):
             logger.error(e)
 
     def __create_scan_project_dir(self, start_url):
-        hostname = start_url.split("//")[1].split("/")[0]
+        hostname = start_url.split("//")[1].split("/")[0].split(":")[0]
         self.current_dir = os.getcwd()
 
         self.scan_project_dir = os.path.join(self.current_dir, "scan_prj", hostname) # 该方法针对单链接有效
