@@ -23,7 +23,7 @@ class WvsState(object):
         if address:
             self.address = address
         else:
-            self.address = (self.get_host_ip(), 5555)
+            self.address = (self.get_host_ip(), 5000)
 
         self.state = {
             "Type": "WVSState",
