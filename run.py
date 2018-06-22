@@ -6,7 +6,7 @@ from app import CCAgent, AppScanControl
 from app.lib import common_msg, msg_bus
 
 logger = logging.getLogger("Agent")
-agent = CCAgent(name="AppScan", port=5000, cc_server_address=("192.168.1.31", 6000))
+agent = CCAgent(name="AppScanAgent", port=5000, cc_server_address=("192.168.1.31", 6000))
 
 appscan = AppScanControl()
 
