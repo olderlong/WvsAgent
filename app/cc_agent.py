@@ -11,7 +11,7 @@ logger = logging.getLogger("Agent")
 
 
 class CCAgent(UDPEndPoint):
-    def __init__(self, name="Agent", port=5555, cc_server_address=None):
+    def __init__(self, name="AppscanAgent", port=5555, cc_server_address=None):
         self.agent_name = name
         self.cc_server = cc_server_address
         self.__heartbeat_tm = STATE_UPDATE_INTERVAL
@@ -99,7 +99,7 @@ if __name__ == '__main__':
     state = {
         "Type": "WVSState",
         "Data": {
-            "Name": "Appscan",
+            "Name": "AppscanAgent",
             "Address": agent.address,
             "Timestamp": time.time(),
             "State": u"初始化"
