@@ -26,7 +26,7 @@ wvsstate = WvsState(wvs_name="Appscan")
 class AppScanControl(WVSControlBase):
     def __init__(self):
         self.appscan_path = "appscancmd"
-
+        wvsstate.update_state(u"等待接受命令")
         super(AppScanControl, self).__init__()
 
     def start_new_scan(self, config):
