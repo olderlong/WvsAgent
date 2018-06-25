@@ -101,6 +101,10 @@ class AppScanControl(WVSControlBase):
                 msg_bus.send_msg(common_msg.msg_scan_result_send)
                 self.__print_scan_result(res)
                 time.sleep(1)
+        else:
+            wvsstate.update_state(u"结果为空")
+            time.sleep(5)
+            wvsstate.update_state(u"任务结束")
 
     def __print_scan_result(self, vul_result):
         result_str = "漏洞类型:\t{}\n漏洞URL:\t{}\n漏洞等级:\t{}\n漏洞信息:\t".format(
