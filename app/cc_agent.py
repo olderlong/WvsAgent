@@ -48,11 +48,6 @@ class CCAgent(UDPEndPoint):
             logger.error("收到来自{}的未知类型数据——{}".format(address, data))
 
     def send_state(self, msg):
-        """
-        还存在bug
-        :param msg:
-        :return:
-        """
         state_json = msg.data
         logger.info(state_json)
         self.send_json_to(state_json,  self.cc_server)
