@@ -32,6 +32,7 @@ class UDPEndPoint(threading.Thread):
             try:
                 data, address = self.udp_socket.recvfrom(self.buff_size)
                 threading.Thread(target=self.handler, args=(data, address,)).start()
+
             except Exception as e:
                 # print(e)
                 pass
@@ -58,9 +59,13 @@ class UDPEndPoint(threading.Thread):
             self.udp_socket.sendto(bytes(str_msg, 'utf-8'), address)
 
     def send_json_to(self, json_obj, address):
-        json_str = json.dumps(json_obj)
-        if self.udp_socket.fileno() > 0:
-            self.udp_socket.sendto(bytes(json_str, 'utf-8'), address)
+        try:
+            send_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            json_str = json.dumps(json_obj)
+            send_socket.sendto(bytes(json_str, 'utf-8'), address)
+            send_socket.close()
+        except Exception as e:
+            print(e)
 
     def get_host_ip(self):
         """
